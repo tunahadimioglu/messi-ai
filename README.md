@@ -114,5 +114,3 @@ Eğer AI'ı sıfırlamak istiyorsanız:
 ```bash
 rm emotion_ai_model.pkl user_emotion_data.json movie_data.json
 ```
-
-
