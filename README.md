@@ -1,116 +1,125 @@
-# 🎬 Duygusal Film Öneri AI'ı
+# 🎬 Emotional Movie Recommendation AI
 
-Bu proje, kullanıcıların duygusal deneyimlerini öğrenen ve bu bilgileri kullanarak kişiselleştirilmiş film önerileri yapan bir yapay zeka uygulamasıdır.
+This project is an artificial intelligence application that learns users' emotional experiences and provides personalized movie recommendations based on this information.
 
-## 🌟 Özellikler
+## 🌟 Features
 
-- **Duygu Öğrenme**: AI, sizin tanımladığınız duygusal deneyimlerinizi öğrenir
-- **Film Analizi**: Film yorumlarındaki duyguları analiz eder ve kategorize eder
-- **Kişiselleştirilmiş Öneriler**: Hissetmek istediğiniz duyguya göre film önerir
-- **AI Test Sistemi**: AI'ın ne kadar iyi öğrendiğini test edebilirsiniz
-- **Veri Kalıcılığı**: Öğrenilen veriler otomatik olarak kaydedilir
+- **Emotion Learning**: AI learns your defined emotional experiences
+- **Movie Analysis**: Analyzes and categorizes emotions in movie reviews
+- **Personalized Recommendations**: Suggests movies based on the emotion you want to feel
+- **AI Test System**: Test how well the AI has learned
+- **Data Persistence**: Learned data is automatically saved
 
-## 🎭 Desteklenen Duygular
+## 🎭 Supported Emotions
 
-- **Mutluluk**: Sevinç, neşe, coşku
-- **Üzüntü**: Hüzün, melankoli, acı
-- **Korku**: Endişe, dehşet, gerilim
-- **Öfke**: Sinir, kızgınlık, hiddet
-- **Aşk**: Romantizm, sevgi, tutkulu bağlılık
-- **Heyecan**: Macera, aksiyon, gerilim
-- **Nostalji**: Geçmişe özlem, hatırlama
-- **Umut**: İyimserlik, gelecek beklentisi
-- **Azgınlık**: Tutku, arzu, cinsel çekicilik
-- **Pişmanlık**: Nedamet, vicdan azabı
-- **Yetersizlik**: Kendini eksik hissetme
-- **Utanç**: Mahcubiyet, sıkılganlık
-- **Kaygı**: Endişe, stres, tedirginlik
-- **Nefret**: Düşmanlık, tiksinti
-- **Kıskançlık**: Çekememezlik, imrenme
-- **Bağlanma**: Sevgi, yakınlık, güven
+- **Happiness**: Joy, cheerfulness, excitement
+- **Sadness**: Sorrow, melancholy, pain
+- **Fear**: Anxiety, terror, tension
+- **Anger**: Rage, fury, wrath
+- **Love**: Romance, affection, passionate attachment
+- **Excitement**: Adventure, action, thrill
+- **Nostalgia**: Longing for the past, remembrance
+- **Hope**: Optimism, future expectations
+- **Lust**: Passion, desire, sexual attraction
+- **Regret**: Remorse, guilt, conscience
+- **Inadequacy**: Feeling insufficient, insecurity
+- **Shame**: Embarrassment, bashfulness
+- **Anxiety**: Worry, stress, nervousness
+- **Hatred**: Hostility, disgust
+- **Jealousy**: Envy, resentment
+- **Attachment**: Love, closeness, trust
 
-## 🚀 Kurulum
+## 🚀 Installation
 
-### Gereksinimler
+### Requirements
 - Python 3.8+
-- pip (Python paket yöneticisi)
+- pip (Python package manager)
 
-### Adım 1: Projeyi İndirin
+### Step 1: Download the Project
 ```bash
 git clone https://github.com/tunahadimioglu/messi-ai.git
 cd messi-ai
 ```
 
-### Adım 2: Sanal Ortam Oluşturun
+### Step 2: Create Virtual Environment
 ```bash
-# Windows için
+# For Windows
 python -m venv myenv
 myenv\Scripts\activate
 
-# macOS/Linux için
+# For macOS/Linux
 python3 -m venv myenv
 source myenv/bin/activate
 ```
 
-### Adım 3: Bağımlılıkları Yükleyin
+### Step 3: Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-## 💻 Kullanım
+## 💻 Usage
 
-### İlk Çalıştırma
+### First Run
 ```bash
 python3 main.py
 ```
 
-### AI'ı Eğitme Süreci
-1. **Duygu Öğrenme**: Her duygu için kişisel deneyimlerinizi anlatın
-2. **Film Veri Girişi**: Film isimlerini ve yorumlarını girin
-3. **Test**: AI'ın ne kadar iyi öğrendiğini test edin
+### AI Training Process
+1. **Emotion Learning**: Describe your personal experiences for each emotion
+2. **Movie Data Input**: Enter movie names and reviews
+3. **Testing**: Test how well the AI has learned
 
-### Ana Menü Seçenekleri
-- **1**: Film önerisi al
-- **2**: Yeni film verisi ekle
-- **3**: AI'ı test et
-- **4**: Çıkış
+### Main Menu Options
+- **1**: Get movie recommendation
+- **2**: Add new movie data
+- **3**: Test AI
+- **4**: Exit
 
-## 📁 Dosya Yapısı
+## 📁 File Structure
 
 ```
-duygusal-film-ai/
-├── main.py                    # Ana uygulama dosyası
-├── requirements.txt           # Python bağımlılıkları
-├── README.md                 # Bu dosya
-├── emotion_ai_model.pkl      # Eğitilmiş AI modeli (otomatik oluşur)
-├── user_emotion_data.json    # Kullanıcı duygu verileri (otomatik oluşur)
-├── movie_data.json          # Film verileri (otomatik oluşur)
-└── myenv/                   # Sanal ortam klasörü
+emotional-movie-ai/
+├── main.py                    # Main application file
+├── requirements.txt           # Python dependencies
+├── README.md                 # This file
+├── emotion_ai_model.pkl      # Trained AI model (auto-generated)
+├── user_emotion_data.json    # User emotion data (auto-generated)
+├── movie_data.json          # Movie data (auto-generated)
+└── myenv/                   # Virtual environment folder
 ```
 
-## 🧠 AI Nasıl Çalışır?
+## 🧠 How Does the AI Work?
 
-1. **Öğrenme**: Sizin verdiğiniz duygusal deneyimlerden kelime kalıpları öğrenir
-2. **Analiz**: TF-IDF ve Machine Learning ile metinlerdeki duyguları tespit eder
-3. **Eşleştirme**: Film yorumlarını duygusal kategorilere ayırır
-4. **Öneri**: İstediğiniz duyguya en uygun filmi önerir
+1. **Learning**: Learns word patterns from your emotional experiences
+2. **Analysis**: Detects emotions in texts using TF-IDF and Machine Learning
+3. **Matching**: Categorizes movie reviews into emotional categories
+4. **Recommendation**: Suggests the most suitable movie for your desired emotion
 
-## 🔧 Geliştirme
+## 🔧 Development
 
-### Yeni Duygu Ekleme
-`main.py` dosyasındaki `emotion_tags` sözlüğüne yeni duygular ekleyebilirsiniz:
+### Adding New Emotions
+You can add new emotions to the `emotion_tags` dictionary in `main.py`:
 
 ```python
 emotion_tags = {
-    "yeni_duygu": {
-        "description": "Açıklama",
-        "examples": ["örnek1", "örnek2"]
+    "new_emotion": {
+        "description": "Description",
+        "examples": ["example1", "example2"]
     }
 }
 ```
 
-### Model Sıfırlama
-Eğer AI'ı sıfırlamak istiyorsanız:
+### Model Reset
+If you want to reset the AI:
 ```bash
 rm emotion_ai_model.pkl user_emotion_data.json movie_data.json
 ```
+
+
+## 📧 Contact
+
+Project Link: [https://github.com/tunahadimioglu/messi-ai](https://github.com/tunahadimioglu/messi-ai)
+
+---
+
+⭐ If you found this project helpful, please give it a star!
