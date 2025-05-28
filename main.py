@@ -1,59 +1,61 @@
 from sentence_transformers import SentenceTransformer
+import pandas as pd
+import numpy as np
 import faiss
 import openai
 
-# Ön ayarlar
+# Settings
 openai.api_key = "YOUR_OPENAI_API_KEY"
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
-# Verileri yükle
-his_df = pd.read_csv("his_deneyimleri.csv")  # Kolonlar: Duygu, Deneyim
-yorum_df = pd.read_csv("film_yorumlari.csv")  # Kolonlar: Film, Yorum
+# Load data
+emotion_df = pd.read_csv("his_deneyimleri.csv")  # Columns: Emotion, Experience
+review_df = pd.read_csv("film_yorumlari.csv")    # Columns: Film, Review
 
-# 1. Tüm deneyim embeddinglerini al
-his_embeddings = model.encode(his_df['Deneyim'].tolist(), show_progress_bar=True)
+# 1. Get all emotion experience embeddings
+emotion_embeddings = model.encode(emotion_df['Experience'].tolist(), show_progress_bar=True)
 
-# 2. Tüm yorum embeddinglerini al
-yorum_embeddings = model.encode(yorum_df['Yorum'].tolist(), show_progress_bar=True)
+# 2. Get all film review embeddings
+review_embeddings = model.encode(review_df['Review'].tolist(), show_progress_bar=True)
 
-# 3. FAISS index kur (yorumlar için)
-dim = yorum_embeddings.shape[1]
+# 3. Build FAISS index for reviews
+dim = review_embeddings.shape[1]
 index = faiss.IndexFlatL2(dim)
-index.add(np.array(yorum_embeddings))
+index.add(np.array(review_embeddings))
 
-# 4. Kullanıcı hissini işleyip benzer yorumları bul
+# 4. Retrieve top-k closest reviews for a given emotional input
 
-def get_uygun_yorumlar(his_girdileri, top_k=5):
-    his_vektoru = model.encode(his_girdileri, show_progress_bar=False)
-    if isinstance(his_vektoru[0], list) or isinstance(his_vektoru[0], np.ndarray):
-        ortalama_his = np.mean(his_vektoru, axis=0)
+def find_closest_reviews(user_emotions, top_k=5):
+    user_vector = model.encode(user_emotions, show_progress_bar=False)
+    if isinstance(user_vector[0], list) or isinstance(user_vector[0], np.ndarray):
+        avg_vector = np.mean(user_vector, axis=0)
     else:
-        ortalama_his = his_vektoru
-    mesafe, indexler = index.search(np.array([ortalama_his]), top_k)
-    yorumlar = yorum_df.iloc[indexler[0]]
-    return yorumlar
+        avg_vector = user_vector
+    distances, indices = index.search(np.array([avg_vector]), top_k)
+    return review_df.iloc[indices[0]]
 
-# 5. GPT'den öneri al
+# 5. Ask GPT for film recommendations
 
-def gpt_ile_oneri_al(his_adi, deneyimler, yorumlar_df):
-    yorumlar_text = "\n\n".join([
-        f"{row['Film']}: {row['Yorum']}" for _, row in yorumlar_df.iterrows()
+def get_recommendation_from_gpt(emotion_label, user_experiences, matched_reviews_df):
+    review_text = "\n\n".join([
+        f"{row['Film']}: {row['Review']}" for _, row in matched_reviews_df.iterrows()
     ])
     prompt = f"""
-    Kullanıcı aşağıdaki duyguları hissetmek istiyor: {his_adi}
+The user wants to experience the following emotion(s): {emotion_label}
 
-    Bu duygular aşağıdaki deneyimlerle tanımlandı:
-    ---
-    {chr(10).join(deneyimler)}
-    ---
+These emotions were described through the following personal experiences:
+---
+{chr(10).join(user_experiences)}
+---
 
-    Bu deneyimlere yakın film yorumları:
-    ===
-    {yorumlar_text}
-    ===
+Below are viewer reviews that closely match these experiences:
+===
+{review_text}
+===
 
-    Yukarıdaki bilgiler doğrultusunda, bu duyguları yaşatabilecek 2 film öner. Kısa açıklama ver.
-    """
+Based on the above, recommend 2 films that are likely to evoke these emotions.
+Include a short explanation for each recommendation.
+"""
 
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
@@ -62,26 +64,29 @@ def gpt_ile_oneri_al(his_adi, deneyimler, yorumlar_df):
     )
     return response['choices'][0]['message']['content']
 
-# 6. Simülasyon: Kullanıcı birden fazla hisle girdi
-istekler = [
-    "filmden sonra kendime gelemeyeyim",
-    "melankoli hissetmek istiyorum"
+# 6. Example simulation: user inputs emotional goals
+user_inputs = [
+    "I want to be emotionally overwhelmed after the movie",
+    "I want to feel melancholic"
 ]
 
-# Deneyim veri setinden bu hislere en yakın deneyimleri bul
-uygun_deneyimler = []
-uygun_etiketler = []
-for istek in istekler:
-    his_vec = model.encode(istek)
-    sim = model.encode(his_df['Deneyim'].tolist())
-    skorlar = np.dot(sim, his_vec) / (np.linalg.norm(sim, axis=1) * np.linalg.norm(his_vec))
-    idx = np.argmax(skorlar)
-    uygun_deneyimler.append(his_df.iloc[idx]['Deneyim'])
-    uygun_etiketler.append(his_df.iloc[idx]['Duygu'])
+# Find closest personal experiences for each emotional goal
+matched_experiences = []
+matched_labels = []
 
-# Yakın yorumları bul ve GPT'ye gönder
-yorumlar = get_uygun_yorumlar(uygun_deneyimler, top_k=6)
-oneri = gpt_ile_oneri_al(", ".join(uygun_etiketler), uygun_deneyimler, yorumlar)
+for input_text in user_inputs:
+    input_vector = model.encode(input_text)
+    sim_vectors = model.encode(emotion_df['Experience'].tolist())
+    similarities = np.dot(sim_vectors, input_vector) / (
+        np.linalg.norm(sim_vectors, axis=1) * np.linalg.norm(input_vector)
+    )
+    best_idx = np.argmax(similarities)
+    matched_experiences.append(emotion_df.iloc[best_idx]['Experience'])
+    matched_labels.append(emotion_df.iloc[best_idx]['Emotion'])
 
-print("\n\n🎬 Önerilen Filmler:\n")
-print(oneri)
+# Retrieve matching reviews and get GPT recommendation
+matched_reviews = find_closest_reviews(matched_experiences, top_k=6)
+recommendation = get_recommendation_from_gpt(", ".join(matched_labels), matched_experiences, matched_reviews)
+
+print("\n\nRecommended Films:\n")
+print(recommendation)
